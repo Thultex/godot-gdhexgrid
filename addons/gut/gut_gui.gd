@@ -28,7 +28,7 @@
 # This class contains all the GUI creation code for Gut.  It was split out and
 # hopefully can be moved to a scene in the future.
 ################################################################################
-extends WindowDialog
+extends Window
 
 # various counters.  Most have been moved to the Summary object but not all.
 var _summary = {
@@ -232,10 +232,10 @@ func setup_controls():
 func set_it_up():
 	self.set_size(min_size)
 	setup_controls()
-	self.connect("mouse_entered", self, "_on_mouse_enter")
-	self.connect("mouse_exited", self, "_on_mouse_exit")
+	self.connect("mouse_entered", Callable(self, "_on_mouse_enter"))
+	self.connect("mouse_exited", Callable(self, "_on_mouse_exit"))
 	set_process(true)
-	set_pause_mode(PAUSE_MODE_PROCESS)
+	set_process_mode(PROCESS_MODE_ALWAYS)
 	_update_controls()
 
 #-------------------------------------------------------------------------------

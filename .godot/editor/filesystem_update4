@@ -1,0 +1,5 @@
+res://default_env.tres
+res://demo_2d.tscn
+res://HexGrid.gd
+res://demo_2d.gd
+res://addons/gut/GutScene.tscn

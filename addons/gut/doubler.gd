@@ -160,10 +160,10 @@ func _write_file(obj_info, dest_path, override_path=null):
 	f.close()
 
 func _double_scene_and_script(target_path, dest_path):
-	var dir = Directory.new()
+	var dir = DirAccess.new()
 	dir.copy(target_path, dest_path)
 
-	var inst = load(target_path).instance()
+	var inst = load(target_path).instantiate()
 	var script_path = null
 	if(inst.get_script()):
 		script_path = inst.get_script().get_path()
@@ -292,7 +292,7 @@ func get_output_dir():
 
 func set_output_dir(output_dir):
 	_output_dir = output_dir
-	var d = Directory.new()
+	var d = DirAccess.new()
 	d.make_dir_recursive(output_dir)
 
 func get_spy():
@@ -354,13 +354,13 @@ func double_inner(path, subpath, strategy=_strategy):
 func clear_output_directory():
 	var did = false
 	if(_output_dir.find('user://') == 0):
-		var d = Directory.new()
+		var d = DirAccess.new()
 		var result = d.open(_output_dir)
 		# BIG GOTCHA HERE.  If it cannot open the dir w/ erro 31, then the
 		# directory becomes res:// and things go on normally and gut clears out
 		# out res:// which is SUPER BAD.
 		if(result == OK):
-			d.list_dir_begin(true)
+			d.list_dir_begin() # TODOConverter3To4 fill missing arguments https://github.com/godotengine/godot/pull/40547
 			var files = []
 			var f = d.get_next()
 			while(f != ''):
@@ -372,7 +372,7 @@ func clear_output_directory():
 func delete_output_directory():
 	var did = clear_output_directory()
 	if(did):
-		var d = Directory.new()
+		var d = DirAccess.new()
 		d.remove(_output_dir)
 
 # When creating doubles a unique name is used that each double can be its own

@@ -212,7 +212,9 @@ func load_options_from_config_file(file_path, into):
 	var json = f.get_as_text()
 	f.close()
 
-	var results = JSON.parse(json)
+	var test_json_conv = JSON.new()
+	test_json_conv.parse(json)
+	var results = test_json_conv.get_data()
 	# SHORTCIRCUIT
 	if(results.error != OK):
 		print("\n\n",'!! ERROR parsing file:  ', file_path)
@@ -233,7 +235,7 @@ func load_options_from_config_file(file_path, into):
 func apply_options(opts):
 	_tester = load('res://addons/gut/gut.gd').new()
 	get_root().add_child(_tester)
-	_tester.connect('tests_finished', self, '_on_tests_finished', [opts.should_exit])
+	_tester.connect('tests_finished', Callable(self, '_on_tests_finished').bind(opts.should_exit))
 	_tester.set_yield_between_tests(true)
 	_tester.set_modulate(Color(1.0, 1.0, 1.0, min(1.0, float(opts.opacity) / 100)))
 	_tester.show()
@@ -269,7 +271,7 @@ func _print_gutconfigs(values):
 	var header = """Here is a sample of a full .gutconfig.json file.
 You do not need to specify all values in your own file.  The values supplied in
 this sample are what would be used if you ran gut w/o the -gprint_gutconfig_sample
-option (the resolved values where default < .gutconfig < command line)."""
+option (the resolved values where default < super.gutconfig < command line)."""
 	print("\n", header.replace("\n", ' '), "\n\n")
 	var resolved = values
 
@@ -278,14 +280,14 @@ option (the resolved values where default < .gutconfig < command line)."""
 	resolved.erase("show_help")
 
 	print("Here's a config with all the properties set based off of your current command and config.")
-	var text = JSON.print(resolved)
+	var text = JSON.stringify(resolved)
 	print(text.replace(',', ",\n"))
 
 	for key in resolved:
 		resolved[key] = null
 
 	print("\n\nAnd here's an empty config for you fill in what you want.")
-	text = JSON.print(resolved)
+	text = JSON.stringify(resolved)
 	print(text.replace(',', ",\n"))
 
 
@@ -313,7 +315,7 @@ func _init():
 		elif(o.get_value('-gpo')):
 			print('All command line options and where they are specified.  ' +
 			      'The "final" value shows which value will actually be used ' +
-				  'based on order of precedence (default < .gutconfig < cmd line).' + "\n")
+				  'based on order of precedence (default < super.gutconfig < cmd line).' + "\n")
 			print(opt_resolver.to_s_verbose())
 			quit()
 		elif(o.get_value('-gprint_gutconfig_sample')):
