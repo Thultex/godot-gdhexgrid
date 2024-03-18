@@ -12,6 +12,9 @@ func _ready():
 	HexGrid.hex_scale = Vector2(50, 50)
 	
 
+#func _process(delta: float) -> void:
+	#HexGrid.hex_scale = Vector2(50*sin(Time.get_ticks_msec()/10), 50)
+
 func _unhandled_input(event):
 	if 'position' in event:
 		var relative_pos = self.transform.affine_inverse() * event.position

@@ -372,7 +372,8 @@ func find_path(start, goal, exceptions=[]):
 				var priority = next_cost + next_hex.distance_to(goal)
 				# Insert into the frontier
 				var item = make_priority_item(next, priority)
-				var idx = frontier.bsearch_custom(item, self, "comp_priority_item")
+				#var idx = frontier.bsearch_custom(item, self, "comp_priority_item")
+				var idx = frontier.bsearch_custom(item, comp_priority_item)
 				frontier.insert(idx, item)
 				came_from[next] = current
 	
