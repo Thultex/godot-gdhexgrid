@@ -1,28 +1,28 @@
 extends Panel
 
-onready var _script_list = $ScriptsList
-onready var _nav = {
+@onready var _script_list = $ScriptsList
+@onready var _nav = {
 	prev = $Navigation/Previous,
 	next = $Navigation/Next,
 	run = $Navigation/Run,
 	current_script = $Navigation/CurrentScript,
 	show_scripts = $Navigation/ShowScripts
 }
-onready var _progress = {
+@onready var _progress = {
 	script = $ScriptProgress,
 	test = $TestProgress
 }
-onready var _summary = {
+@onready var _summary = {
 	failing = $Summary/Failing,
 	passing = $Summary/Passing
 }
 
-onready var _extras = $ExtraOptions
-onready var _ignore_pauses = $ExtraOptions/IgnorePause
-onready var _continue_button = $Continue/Continue
-onready var _text_box = $TextDisplay/RichTextLabel
+@onready var _extras = $ExtraOptions
+@onready var _ignore_pauses = $ExtraOptions/IgnorePause
+@onready var _continue_button = $Continue/Continue
+@onready var _text_box = $TextDisplay/RichTextLabel
 
-onready var _titlebar = {
+@onready var _titlebar = {
 	bar = $TitleBar,
 	time = $TitleBar/Time,
 	label = $TitleBar/Title
@@ -49,14 +49,14 @@ signal run_single_script
 signal script_selected
 
 func _ready():
-	_pre_maximize_size = rect_size
+	_pre_maximize_size = size
 	_hide_scripts()
 	_update_controls()
 	_nav.current_script.set_text("No scripts available")
 	set_title()
 	clear_summary()
 	$TitleBar/Time.set_text("")
-	$ExtraOptions/DisableBlocker.pressed = !_text_box_blocker_enabled
+	$ExtraOptions/DisableBlocker.button_pressed = !_text_box_blocker_enabled
 	_extras.visible = false
 	update()
 
@@ -73,9 +73,9 @@ func _draw(): # needs get_size()
 	var line_space = 3
 	var grab_line_color = Color(.4, .4, .4)
 	for i in range(1, 10):
-		var x = rect_size - Vector2(i * line_space, grab_margin)
-		var y = rect_size - Vector2(grab_margin, i * line_space)
-		draw_line(x, y, grab_line_color, 1, true)
+		var x = size - Vector2(i * line_space, grab_margin)
+		var y = size - Vector2(grab_margin, i * line_space)
+		draw_line(x, y, grab_line_color, 1)
 
 func _on_Maximize_draw():
 	# draw the maximize square thing.
@@ -96,7 +96,7 @@ func _on_ShowExtras_draw():
 	var width = 2
 	for i in range(3):
 		var y = start_y + pad * i
-		btn.draw_line(Vector2(start_x, y), Vector2(btn.get_size().x - start_x, y), color, width, true)
+		btn.draw_line(Vector2(start_x, y), Vector2(btn.get_size().x - start_x, y), color, width)
 
 # ####################
 # GUI Events
@@ -155,11 +155,11 @@ func _input(event):
 
 	if(_mouse.in_handle):
 		if(event is InputEventMouseMotion and _mouse.down):
-			var new_size = rect_size + event.position - _mouse.down_pos
+			var new_size = size + event.position - _mouse.down_pos
 			var new_mouse_down_pos = event.position
-			rect_size = new_size
+			size = new_size
 			_mouse.down_pos = new_mouse_down_pos
-			_pre_maximize_size = rect_size
+			_pre_maximize_size = size
 
 func _on_ResizeHandle_mouse_entered():
 	_mouse.in_handle = true
@@ -178,7 +178,7 @@ func _on_FocusBlocker_gui_input(ev):
 			converted.delta = Vector2(0, ev.relative.y)
 			converted.position = Vector2(0, 0)
 			get_text_box()._gui_input(converted)
-		elif(ev is InputEventMouseButton and (ev.button_index == BUTTON_WHEEL_DOWN or ev.button_index == BUTTON_WHEEL_UP)):
+		elif(ev is InputEventMouseButton and (ev.button_index == MOUSE_BUTTON_WHEEL_DOWN or ev.button_index == MOUSE_BUTTON_WHEEL_UP)):
 			get_text_box()._gui_input(ev)
 	else:
 		get_text_box()._gui_input(ev)
@@ -202,10 +202,10 @@ func _on_ShowExtras_toggled(button_pressed):
 	_extras.visible = button_pressed
 
 func _on_Maximize_pressed():
-	if(rect_size == _pre_maximize_size):
+	if(size == _pre_maximize_size):
 		maximize()
 	else:
-		rect_size = _pre_maximize_size
+		size = _pre_maximize_size
 # ####################
 # Private
 # ####################
@@ -279,7 +279,7 @@ func set_log_level(value):
 	$LogLevelSlider.value = _utils.nvl(value, 0)
 
 func set_ignore_pause(should):
-	_ignore_pauses.pressed = should
+	_ignore_pauses.button_pressed = should
 
 func get_ignore_pause():
 	return _ignore_pauses.pressed
@@ -340,4 +340,4 @@ func clear_summary():
 func maximize():
 	if(is_inside_tree()):
 		var vp_size_offset = get_viewport().size
-		rect_size = vp_size_offset / get_scale()
+		size = vp_size_offset / get_scale()
